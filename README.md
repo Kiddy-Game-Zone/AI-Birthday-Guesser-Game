@@ -2,8 +2,8 @@
 
 Can a simple web game guess the **day** (1-31) you were born? 🤔 Play along and be amazed! This fun little game uses a clever trick to figure out the day you're thinking of after just 5 questions.
 
-![Birthday Guesser Screenshot Placeholder](https://placehold.co/600x300/FFF7ED/C2410C?text=Birthday+Guesser+Screenshot)
-*(Replace the placeholder URL above with an actual screenshot of your game!)*
+![image](https://github.com/user-attachments/assets/93f0b269-16c5-4aae-b75e-29c3ac9adbb2)
+
 
 ## ✨ How Does it Work? (The Magic Trick!)
 
