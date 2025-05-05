@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Guesser Game!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+         html, body { height: 100%; } /* Ensure body takes full height */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFCEB; /* Requested background */
+            display: flex;
+            flex-direction: column; /* Stack content and footer */
+            margin: 0; /* Remove default body margin */
+        }
+         main { flex-grow: 1; } /* Allow main content to push footer down */
+
+
+        /* Main container styling */
+        .main-container {
+            background-color: #ffffff;
+            border: 3px solid #2D3748;
+            border-radius: 16px;
+            box-shadow: 8px 8px 0px #2D3748;
+            width: 100%;
+            max-width: 42rem; /* max-w-lg */
+            margin: 2rem auto;
+            padding: 1.5rem sm:p-8; /* p-6 sm:p-8 */
+            text-align: center;
+             flex-shrink: 0; /* Prevent container shrinking */
+        }
+
+         /* Card Styling for Questions */
+        .question-card {
+             background-color: #FFF7ED; /* orange-50 */
+             border: 2px solid #FDBA74; /* orange-300 */
+             border-radius: 12px;
+             box-shadow: 4px 4px 0px #FDBA74; /* Offset shadow */
+             padding: 1.5rem; /* p-6 */
+             margin-top: 1.5rem; /* mt-6 */
+             min-height: 250px; /* Ensure space for numbers */
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: space-between;
+        }
+        .number-set {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); /* Responsive columns */
+             gap: 0.75rem; /* gap-3 */
+             margin-top: 1rem;
+             margin-bottom: 1.5rem;
+             width: 100%;
+             max-width: 350px; /* Limit width of numbers */
+        }
+        .number-set span {
+             background-color: #FEF3C7; /* amber-100 */
+             color: #9A3412; /* amber-800 */
+             font-weight: 600;
+             padding: 0.3rem;
+             border-radius: 6px;
+             text-align: center;
+             font-size: 0.9rem;
+             border: 1px solid #FDE68A; /* amber-200 */
+             box-shadow: 1px 1px 0px #FDE68A;
+        }
+
+        /* Playful Action Button Style */
+        .action-button {
+            background-color: #FF7F50; /* Coral */
+            color: white;
+            font-weight: 700; /* bold */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 3px solid #2D3748; /* Darker border */
+            box-shadow: 5px 5px 0px #2D3748; /* Bigger shadow */
+            transition: all 0.15s ease-out;
+            cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem;
+            min-width: 100px; /* Ensure buttons have minimum width */
+        }
+        .action-button:hover {
+            background-color: #FF6347; /* Tomato */
+            box-shadow: 6px 6px 0px #2D3748;
+            transform: translateY(-2px) translateX(-1px); /* More lift */
+        }
+         .action-button:active {
+            background-color: #CD5C5C; /* IndianRed */
+            box-shadow: 2px 2px 0px #2D3748;
+            transform: translateY(2px) translateX(2px); /* Push down effect */
+        }
+        .action-button:focus {
+            outline: none;
+            box-shadow: 5px 5px 0px #2D3748, 0 0 0 3px #FFFCEB, 0 0 0 5px #FF7F50; /* Ring effect */
+        }
+        /* Specific styles for Yes/No */
+        .yes-button { background-color: #34D399; border-color: #059669; box-shadow: 5px 5px 0px #059669; }
+        .yes-button:hover { background-color: #10B981; box-shadow: 6px 6px 0px #047857; }
+        .yes-button:active { background-color: #059669; box-shadow: 2px 2px 0px #047857; }
+        .yes-button:focus { box-shadow: 5px 5px 0px #059669, 0 0 0 3px #FFFCEB, 0 0 0 5px #34D399; }
+
+        .no-button { background-color: #F87171; border-color: #B91C1C; box-shadow: 5px 5px 0px #B91C1C; }
+        .no-button:hover { background-color: #EF4444; box-shadow: 6px 6px 0px #991B1B; }
+        .no-button:active { background-color: #DC2626; box-shadow: 2px 2px 0px #991B1B; }
+        .no-button:focus { box-shadow: 5px 5px 0px #B91C1C, 0 0 0 3px #FFFCEB, 0 0 0 5px #F87171; }
+
+
+        /* Result Text Styling */
+        #resultArea {
+             background-color: #FEF3C7; /* amber-100 */
+             border: 2px solid #FDE68A; /* amber-200 */
+             border-radius: 12px;
+             box-shadow: 4px 4px 0px #FDE68A;
+             padding: 1.5rem; /* p-6 */
+             margin-top: 1.5rem; /* mt-6 */
+             min-height: 100px;
+             text-align: center;
+             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+             opacity: 0;
+             transform: scale(0.95);
+        }
+         #resultArea.visible {
+             opacity: 1;
+             transform: scale(1);
+         }
+        #resultText { font-size: 1.5rem; font-weight: 700; color: #B45309; /* amber-700 */ margin-bottom: 0.5rem;}
+        #thinkingText { font-style: italic; color: #9A3412; }
+
+        /* Headings & Labels */
+        .section-heading { color: #C2410C; font-weight: 700; text-align: center; border-bottom: 2px dashed #FDBA74; padding-bottom: 0.5rem; margin-bottom: 1rem; font-size: 1.125rem; }
+        label { color: #9A3412; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; }
+        #questionText { font-size: 1.1rem; font-weight: 600; color: #9A3412; margin-bottom: 1rem;}
+
+        /* Footer Styling */
+        .page-footer {
+            text-align: center;
+            padding: 1rem 0; /* py-4 */
+            margin-top: 2rem; /* mt-8 */
+            font-size: 0.8rem; /* Slightly larger than text-xs */
+            color: #6B7280; /* text-gray-500 */
+            flex-shrink: 0; /* Prevent footer from shrinking */
+            line-height: 1.5; /* Improve line spacing */
+        }
+        .page-footer p { margin-bottom: 0.25rem; } /* Add space between lines */
+
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <main> 
+        <div class="main-container">
+            <h1 class="text-3xl sm:text-4xl font-bold text-center text-slate-800 mb-8 tracking-tight flex items-center justify-center gap-3">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9 text-orange-500">
+                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L1.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.624L16.5 21.75l-.398-1.126a3.375 3.375 0 00-2.455-2.456L12.75 18l1.126-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.126a3.375 3.375 0 002.456 2.456L20.25 18l-1.126.398a3.375 3.375 0 00-2.456 2.456z" />
+                 </svg>
+                Birthday Guesser Game
+            </h1>
+
+            <p class="text-center text-amber-800 mb-6">Think of the **day** of the month you were born (1-31). I will ask you 5 questions. Answer honestly!</p>
+
+            <div id="gameArea">
+                <div id="questionCard" class="question-card hidden">
+                    <p id="questionText">Is your birth day in this set of numbers?</p>
+                    <div id="numberSetDiv" class="number-set">
+                        </div>
+                    <div class="flex gap-4 mt-4">
+                         <button id="yesBtn" class="action-button yes-button">Yes</button>
+                         <button id="noBtn" class="action-button no-button">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultArea" class="results-container hidden">
+                <p id="thinkingText">Okay, let me think...</p>
+                <p id="resultText"></p>
+                 <button id="resetBtn" class="action-button mt-4">Play Again?</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p>© 2025 ToolForge. All rights reserved.</p>
+        <p>Built with ❤️ by Anas.</p>
+    </footer>
+
+    <script>
+        // --- DOM Elements ---
+        const gameArea = document.getElementById('gameArea');
+        const questionCard = document.getElementById('questionCard');
+        const questionText = document.getElementById('questionText');
+        const numberSetDiv = document.getElementById('numberSetDiv');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const resultArea = document.getElementById('resultArea');
+        const thinkingText = document.getElementById('thinkingText');
+        const resultText = document.getElementById('resultText');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // --- Game Logic ---
+        const numberSets = [
+            // Set 1 (Value 1 - Bit 0)
+            [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31],
+            // Set 2 (Value 2 - Bit 1)
+            [2, 3, 6, 7, 10, 11, 14, 15, 18, 19, 22, 23, 26, 27, 30, 31],
+            // Set 3 (Value 4 - Bit 2)
+            [4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31],
+            // Set 4 (Value 8 - Bit 3)
+            [8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26, 27, 28, 29, 30, 31],
+            // Set 5 (Value 16 - Bit 4)
+            [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+        ];
+
+        let currentQuestionIndex = 0;
+        let guessedNumber = 0;
+
+        // --- Functions ---
+
+        function displayQuestion(index) {
+            if (index < numberSets.length) {
+                questionText.textContent = `Question ${index + 1} of ${numberSets.length}: Is your birth day in this set?`;
+                numberSetDiv.innerHTML = ''; // Clear previous numbers
+                numberSets[index].forEach(num => {
+                    const span = document.createElement('span');
+                    span.textContent = num;
+                    numberSetDiv.appendChild(span);
+                });
+                questionCard.classList.remove('hidden');
+                resultArea.classList.add('hidden'); // Hide result area during questions
+            } else {
+                // All questions asked, show result
+                showResult();
+            }
+        }
+
+        function handleAnswer(isYes) {
+            if (isYes) {
+                // Add the value corresponding to the current question's set
+                guessedNumber += Math.pow(2, currentQuestionIndex);
+            }
+            currentQuestionIndex++;
+            displayQuestion(currentQuestionIndex);
+        }
+
+        function showResult() {
+            questionCard.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            resultText.textContent = ''; // Clear previous result text
+            thinkingText.textContent = 'Calculating... 🤔';
+
+            // Simulate thinking time
+            setTimeout(() => {
+                thinkingText.textContent = 'Aha! I think I\'ve got it... 💡';
+            }, 1000);
+
+            setTimeout(() => {
+                if (guessedNumber > 0 && guessedNumber <= 31) {
+                     resultText.textContent = `Your birth day is the ${getOrdinal(guessedNumber)}! 🎉`;
+                } else {
+                     // Handle the case where the user consistently answers "No" (guessedNumber = 0)
+                     if (guessedNumber === 0) {
+                         resultText.textContent = "You said 'No' to all sets! Are you sure you were thinking of a day between 1 and 31? 🤔";
+                     } else {
+                         resultText.textContent = "Hmm, something went wrong, or maybe you weren't thinking of a day between 1 and 31? 🤔 Let's try again!";
+                     }
+                }
+                thinkingText.textContent = ''; // Hide thinking text
+                resultArea.classList.add('visible'); // Trigger fade-in
+            }, 2500);
+        }
+
+         // Helper function for ordinal numbers (1st, 2nd, 3rd, etc.)
+         function getOrdinal(n) {
+             const s = ["th", "st", "nd", "rd"];
+             const v = n % 100;
+             return n + (s[(v - 20) % 10] || s[v] || s[0]);
+         }
+
+
+        function resetGame() {
+            currentQuestionIndex = 0;
+            guessedNumber = 0;
+            resultArea.classList.add('hidden');
+            resultArea.classList.remove('visible'); // Reset animation classes
+            displayQuestion(currentQuestionIndex);
+        }
+
+        // --- Event Listeners ---
+        yesBtn.addEventListener('click', () => handleAnswer(true));
+        noBtn.addEventListener('click', () => handleAnswer(false));
+        resetBtn.addEventListener('click', resetGame);
+
+        // --- Initial Load ---
+        displayQuestion(currentQuestionIndex); // Start the game
+
+    </script>
+
+</body>
+</html>
