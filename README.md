@@ -2,7 +2,7 @@
 
 Can a simple web game guess the **day** (1-31) you were born? 🤔 Play along and be amazed! This fun little game uses a clever trick to figure out the day you're thinking of after just 5 questions.
 
-![image](https://github.com/user-attachments/assets/93f0b269-16c5-4aae-b75e-29c3ac9adbb2)
+
 
 
 ## ✨ How Does it Work? (The Magic Trick!)
